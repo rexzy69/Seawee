@@ -3,7 +3,10 @@ import keyboard
 import os
 import platform
 import requests
+import shutil
 import time
+import zipfile
+import sys
 
 restart_confirmed = False
 instruction_spoken = False
@@ -30,9 +33,31 @@ def check_for_updates():
         if local_version == github_version:
             speak("No update found.")
         else:
-            speak("Update found.")
+            speak("Update found. Updating files.")
+            download_and_replace_files()
     except Exception as e:
         speak("Error checking for updates. Please try again later.")
+
+def download_and_replace_files():
+    try:
+        github_url = "https://github.com/rexzy69/Seawee/archive/main.zip"
+        response = requests.get(github_url)
+        with open("update.zip", "wb") as file:
+            file.write(response.content)
+
+        with zipfile.ZipFile("update.zip", "r") as zip_ref:
+            zip_ref.extractall("temp_folder")
+
+        for file in os.listdir("temp_folder/Seawee-main"):
+            shutil.move(os.path.join("temp_folder/Seawee-main", file), os.path.join(".", file))
+        
+        shutil.rmtree("temp_folder")
+        os.remove("update.zip")
+
+        speak("Files updated successfully.")
+        sys.exit()  # Exit the script after updating files
+    except Exception as e:
+        speak("Error updating files. Please try again later.")
 
 def on_home_press():
     global instruction_spoken
