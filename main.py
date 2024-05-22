@@ -2,6 +2,7 @@ import pyttsx3
 import keyboard
 import os
 import platform
+import requests
 import time
 
 restart_confirmed = False
@@ -13,6 +14,25 @@ def speak(text):
     engine.setProperty('volume', 1.0)
     engine.say(text)
     engine.runAndWait()
+
+def check_for_updates():
+    try:
+        github_version_url = "https://raw.githubusercontent.com/rexzy69/Seawee/main/version.txt"
+        response = requests.get(github_version_url)
+        github_version = response.text.strip()
+
+        with open("version.txt", "r") as file:
+            local_version = file.read().strip()
+
+        print("Local version:", local_version)
+        print("GitHub version:", github_version)
+
+        if local_version == github_version:
+            speak("No update found.")
+        else:
+            speak("Update found.")
+    except Exception as e:
+        speak("Error checking for updates. Please try again later.")
 
 def on_home_press():
     global instruction_spoken
@@ -46,6 +66,9 @@ def restart_computer():
         speak("Unsupported operating system for restart command.")
 
 if __name__ == "__main__":
+    # Check for updates
+    check_for_updates()
+
     # Define the keys to listen for
     home_key = 'home'
     pyup_key = 'page up'  # Using 'page up' as the PyUp key for this example
