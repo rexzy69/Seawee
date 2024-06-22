@@ -55,6 +55,7 @@ def check_for_updates():
         download_new_script()
         update_version_file(remote_version)
         print("Update complete. Restarting the script...")
+        # Restart the script with the new version
         subprocess.Popen([sys.executable, local_script_file])
         sys.exit()
     else:
