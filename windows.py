@@ -9,8 +9,11 @@ class ShutdownRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             subprocess.call(['shutdown', '/s', '/t', '0'])
 
-PORT = 8000  # Choose any port that is not being used
+def run_server():
+    PORT = 5500  # Public port number example
+    with socketserver.TCPServer(("", PORT), ShutdownRequestHandler) as httpd:
+        print(f"Listening for shutdown requests on port {PORT}...")
+        httpd.serve_forever()
 
-with socketserver.TCPServer(("", PORT), ShutdownRequestHandler) as httpd:
-    print(f"Listening for shutdown requests on port {PORT}...")
-    httpd.serve_forever()
+if __name__ == '__main__':
+    run_server()
